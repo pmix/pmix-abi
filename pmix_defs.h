@@ -66,6 +66,13 @@
 #define PMIX_MAX_NSLEN     255
 #define PMIX_MAX_KEYLEN    511
 
+/* define abstract types for namespaces and keys */
+typedef char pmix_nspace_t[PMIX_MAX_NSLEN+1];
+typedef char pmix_key_t[PMIX_MAX_KEYLEN+1];
+
+/* define a type for rank values */
+typedef uint32_t pmix_rank_t;
+
 /* define a value for requests for job-level data
  * where the info itself isn't associated with any
  * specific rank, or when a request involves
