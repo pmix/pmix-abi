@@ -63,6 +63,8 @@
 #include <unistd.h> /* for uid_t and gid_t */
 #include <sys/types.h> /* for uid_t and gid_t */
 
+extern char **environ;
+
 /* define maximum value and key sizes */
 #define PMIX_MAX_NSLEN     255
 #define PMIX_MAX_KEYLEN    511
@@ -1103,7 +1105,7 @@ pmix_status_t pmix_setenv(const char *name,
                           char ***env)
 {
     int i;
-    char *newvalue, *compare;
+    char newvalue[2048], compare[2048];
     size_t len;
     bool valid;
 
@@ -1125,29 +1127,31 @@ pmix_status_t pmix_setenv(const char *name,
         }
     }
 
+    /* If this is the "environ" array, use setenv */
+    if (*env == environ) {
+        if (NULL == value) {
+            /* this is actually an unsetenv request */
+            unsetenv(name);
+        } else {
+            setenv(name, value, overwrite);
+        }
+        return PMIX_SUCCESS;
+    }
+
     /* Make the new value */
     if (NULL == value) {
-        i = asprintf(&newvalue, "%s=", name);
+        snprintf(newvalue, 2048, "%s=", name);
     } else {
-        i = asprintf(&newvalue, "%s=%s", name, value);
-    }
-    if (NULL == newvalue || 0 > i) {
-        return PMIX_ERR_OUT_OF_RESOURCE;
+        snprintf(newvalue, 2048, "%s=%s", name, value);
     }
 
     if (NULL == *env) {
         pmix_argv_append_nosize(env, newvalue);
-        free(newvalue);
         return PMIX_SUCCESS;
     }
 
     /* Make something easy to compare to */
-
-    i = asprintf(&compare, "%s=", name);
-    if (NULL == compare || 0 > i) {
-        free(newvalue);
-        return PMIX_ERR_OUT_OF_RESOURCE;
-    }
+    snprintf(compare, 2048, "%s=", name);
     len = strlen(compare);
 
     /* Look for a duplicate that's already set in the env */
@@ -1156,12 +1160,9 @@ pmix_status_t pmix_setenv(const char *name,
         if (0 == strncmp((*env)[i], compare, len)) {
             if (overwrite) {
                 free((*env)[i]);
-                (*env)[i] = newvalue;
-                free(compare);
+                (*env)[i] = strdup(newvalue);
                 return PMIX_SUCCESS;
             } else {
-                free(compare);
-                free(newvalue);
                 return PMIX_ERR_BAD_PARAM;
             }
         }
@@ -1172,9 +1173,6 @@ pmix_status_t pmix_setenv(const char *name,
     pmix_argv_append_nosize(env, newvalue);
 
     /* All done */
-
-    free(compare);
-    free(newvalue);
     return PMIX_SUCCESS;
 }
 #define PMIX_SETENV(r, a, b, c) \
