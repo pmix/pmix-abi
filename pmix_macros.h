@@ -66,7 +66,7 @@
  * in this header. They provide 'static inline' functions required to
  * support these macro definitions.
  * *******************************************************************/
-#include "pmix_abi_support_bottom.h"
+#include "pmix_abi_support.h"
 
 
 
