@@ -2,7 +2,6 @@
  * Copyright (c) 2013-2020 Intel, Inc.  All rights reserved.
  * Copyright (c) 2016-2019 Research Organization for Information Science
  *                         and Technology (RIST).  All rights reserved.
- * Copyright (c) 2016      IBM Corporation.  All rights reserved.
  * Copyright (c) 2016-2019 Mellanox Technologies, Inc.
  *                         All rights reserved.
  *
@@ -43,6 +42,7 @@
  *
  * Copyright (c) 2020      Cisco Systems, Inc.  All rights reserved
  * Copyright (c) 2021-2022 Nanook Consulting  All rights reserved.
+ * Copyright (c) 2016-2022 IBM Corporation.  All rights reserved.
  * $COPYRIGHT$
  *
  * Additional copyrights may follow
@@ -50,21 +50,26 @@
  * $HEADER$
  */
 
+/*
+ * PMIx Standard API function pointer declarations for PMIx Standard APIs
+ *
+ * The goal of this header to ease the incorporation of PMIx routines
+ * for applications and tools that wish to dlopen() a PMIx Standard
+ * compliant library and then dlsym() the various functions.
+ */
+
 #ifndef PMIX_FNS_H
 #define PMIX_FNS_H
 
-#include <stdbool.h>
-#include <stdlib.h>
-#include <stdint.h>
-#include <string.h>
-#include <time.h>
-#include <sys/time.h> /* for struct timeval */
-#include <unistd.h> /* for uid_t and gid_t */
-#include <sys/types.h> /* for uid_t and gid_t */
+/* *******************************************************************
+ * PMIx Standard types, constants, and callback functions
+ *  - pmix_types.h is included by pmix_macros.h
+ * PMIx Standard macros
+ * *******************************************************************/
+#include "pmix_macros.h"
 
-#include "pmix_defs.h"
 
-/* CLIENT FUNCTIONS */
+/**** PMIx Client functions ****/
 typedef pmix_status_t (*pmix_init_fn_t)(pmix_proc_t *proc,
                                         pmix_info_t info[], size_t ninfo);
 
@@ -129,6 +134,13 @@ typedef pmix_status_t (*pmix_connect_nb_fn_t)(const pmix_proc_t procs[], size_t 
                                               const pmix_info_t info[], size_t ninfo,
                                               pmix_op_cbfunc_t cbfunc, void *cbdata);
 
+typedef pmix_status_t (*pmix_disconnect_fn_t)(const pmix_proc_t procs[], size_t nprocs,
+                                              const pmix_info_t info[], size_t ninfo);
+
+typedef pmix_status_t (*pmix_disconnect_nb_fn_t)(const pmix_proc_t procs[], size_t nprocs,
+                                                 const pmix_info_t info[], size_t ninfo,
+                                                 pmix_op_cbfunc_t cbfunc, void *cbdata);
+
 typedef pmix_status_t (*pmix_resolve_peers_fn_t)(const char *nodename,
                                                  const pmix_nspace_t nspace,
                                                  pmix_proc_t **procs, size_t *nprocs);
@@ -171,6 +183,8 @@ typedef pmix_status_t (*pmix_process_monitor_fn_t)(const pmix_info_t *monitor, p
 typedef pmix_status_t (*pmix_process_monitor_nb_fn_t)(const pmix_info_t *monitor, pmix_status_t error,
                                                       const pmix_info_t directives[], size_t ndirs,
                                                       pmix_info_cbfunc_t cbfunc, void *cbdata);
+
+/* No funtion pointer for PMIx_Heartbeat() */
 
 typedef pmix_status_t (*pmix_get_credential_fn_t)(const pmix_info_t info[], size_t ninfo,
                                                   pmix_byte_object_t *credential);
@@ -354,8 +368,7 @@ typedef bool (*pmix_data_decompress_fn_t)(const uint8_t *inbytes,
                                           size_t *nbytes);
 
 
-/* Tool functions */
-
+/**** PMIx Tool functions ****/
 typedef pmix_status_t (*pmix_tool_init_fn_t)(pmix_proc_t *proc,
                                              pmix_info_t info[], size_t ninfo);
 
@@ -385,8 +398,8 @@ typedef pmix_status_t (*pmix_iof_push_fn_t)(const pmix_proc_t targets[], size_t 
                                             const pmix_info_t directives[], size_t ndirs,
                                             pmix_op_cbfunc_t cbfunc, void *cbdata);
 
-/* Utility functions */
 
+/**** PMIx Utility functions ****/
 typedef pmix_status_t (*pmix_value_load_fn_t)(pmix_value_t *val,
                                               const void *data,
                                               pmix_data_type_t type);
@@ -398,6 +411,14 @@ typedef pmix_status_t (*pmix_value_unload_fn_t)(pmix_value_t *val,
 typedef pmix_status_t (*pmix_value_xfer_fn_t)(pmix_value_t *dest,
                                               const pmix_value_t *src);
 
+typedef pmix_status_t (*pmix_info_load)(pmix_info_t *info,
+                                        const char *key,
+                                        const void *data,
+                                        pmix_data_type_t type);
+
+typedef pmix_status_t (*pmix_info_xfer)(pmix_info_t *dest,
+                                        const pmix_info_t *src);
+
 typedef void* (*pmix_info_list_start_fn_t)(void);
 
 typedef pmix_status_t (*pmix_info_list_add_fn_t)(void *ptr,
@@ -408,12 +429,13 @@ typedef pmix_status_t (*pmix_info_list_add_fn_t)(void *ptr,
 typedef pmix_status_t (*pmix_info_list_xfer_fn_t)(void *ptr,
                                                   const pmix_info_t *info);
 
-typedef pmix_status_t (*pmix_info_list_convert_fn_t)(void *ptr, pmix_data_array_t *par);
+typedef pmix_status_t (*pmix_info_list_convert_fn_t)(void *ptr,
+                                                     pmix_data_array_t *par);
 
 typedef void (*pmix_info_list_release_fn_t)(void *ptr);
 
-/* Server module functions */
 
+/**** PMIx Server Module functions ****/
 typedef pmix_status_t (*pmix_server_client_connected_fn_t)(const pmix_proc_t *proc, void* server_object,
                                                            pmix_op_cbfunc_t cbfunc, void *cbdata);
 
@@ -539,6 +561,8 @@ typedef pmix_status_t (*pmix_server_fabric_fn_t)(const pmix_proc_t *requestor,
                                                  const pmix_info_t directives[], size_t ndirs,
                                                  pmix_info_cbfunc_t cbfunc, void *cbdata);
 
+
+/**** PMIx Server Module ****/
 typedef struct pmix_server_module_4_0_0_t {
     /* v1x interfaces */
     pmix_server_client_connected_fn_t   client_connected;
@@ -575,8 +599,7 @@ typedef struct pmix_server_module_4_0_0_t {
 } pmix_server_module_t;
 
 
-/* Server API functions */
-
+/**** PMIx Server functions ****/
 typedef pmix_status_t (*pmix_server_init_fn_t)(pmix_server_module_t *module,
                                                pmix_info_t info[], size_t ninfo);
 
@@ -649,4 +672,5 @@ typedef pmix_status_t (*pmix_server_register_resources_fn_t)(pmix_info_t info[],
                                                              pmix_op_cbfunc_t cbfunc,
                                                              void *cbdata);
 
-#endif /* PMIX_FNS_H */
+/* PMIX_FNS_H */
+#endif
