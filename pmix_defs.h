@@ -971,7 +971,7 @@ do {                                            \
 } while(0)
 
 static inline
-char **pmix_argv_split(const char *src_string, int delimeter)
+char **pmix_argv_split(const char *src_string, int delimiter)
 {
     char **argv = NULL;
     char *p, *ptr;
@@ -983,7 +983,7 @@ char **pmix_argv_split(const char *src_string, int delimeter)
     while ('\0' != *p) {
         /* zero length argument, skip */
 
-        if (NULL == (ptr = strchr(p, delimeter))) {
+        if (NULL == (ptr = strchr(p, delimiter))) {
             // append the remainder and we are done
             rc = pmix_argv_append_nosize(&argv, p);
             if (PMIX_SUCCESS != rc) {
