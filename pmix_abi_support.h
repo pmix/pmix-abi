@@ -85,7 +85,8 @@ static inline
 void pmixabi_argv_free(char **argv)
 {
     if (NULL != (argv)) {
-        for (char **p = (argv); NULL != *p; ++p) {
+        char **p;
+        for (p = (argv); NULL != *p; ++p) {
             free(*p);
         }
         free(argv);
@@ -448,6 +449,14 @@ size_t pmixabi_nslen(const char *src)
     }
     return i;
 }
+
+/*
+ * Declared here, but defined in pmix_abi_support_bottom.h
+ */
+static inline
+void pmixabi_darray_destruct(pmix_data_array_t *m);
+static inline
+void pmixabi_value_destruct(pmix_value_t * m);
 
 /* PMIX_ABI_SUPPORT_H */
 #endif
