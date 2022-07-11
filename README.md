@@ -1,5 +1,15 @@
 # PMIx Standard ABI Headers
 
+## PMIx Standard Version Compliance
+
+| PMIx Standard | `PMIX_QUERY_STABLE_ABI_VERSION` | `PMIX_QUERY_PROVISIONAL_ABI_VERSION`
+| ------------- | ------------------------------- | ----------------------------------- |
+| pre-v5.0      | No ABI defined                  | No ABI defined                      |
+| `v5.0`        | `v1.0`                          | `v1.0`                              |
+
+
+
+
 ## Layout of the headers
 
  * `pmix_types.h` : PMIx Standard types, constants, and callback functions
