@@ -319,8 +319,8 @@ const char* PMIx_Data_type_string(pmix_data_type_t type);
 const char* PMIx_Alloc_directive_string(pmix_alloc_directive_t directive);
 const char* PMIx_IOF_channel_string(pmix_iof_channel_t channel);
 const char* PMIx_Job_state_string(pmix_job_state_t state);
-const char* PMIx_Get_attribute_string(char *attribute);
-const char* PMIx_Get_attribute_name(char *attrstring);
+const char* PMIx_Get_attribute_string(const char *attribute);
+const char* PMIx_Get_attribute_name(const char *attrstring);
 const char* PMIx_Link_state_string(pmix_link_state_t state);
 const char* PMIx_Device_type_string(pmix_device_type_t type);
 
@@ -342,7 +342,7 @@ pmix_status_t PMIx_Data_unpack(const pmix_proc_t *source,
 pmix_status_t PMIx_Data_copy(void **dest, void *src,
                              pmix_data_type_t type);
 
-pmix_status_t PMIx_Data_print(char **output, char *prefix,
+pmix_status_t PMIx_Data_print(char **output, const char *prefix,
                               void *src, pmix_data_type_t type);
 
 pmix_status_t PMIx_Data_copy_payload(pmix_data_buffer_t *dest,
@@ -652,7 +652,7 @@ pmix_status_t PMIx_server_deliver_inventory(pmix_info_t info[], size_t ninfo,
                                             pmix_info_t directives[], size_t ndirs,
                                             pmix_op_cbfunc_t cbfunc, void *cbdata);
 
-pmix_status_t PMIx_Register_attributes(char *function, char *attrs[]);
+pmix_status_t PMIx_Register_attributes(const char *function, char *attrs[]);
 
 pmix_status_t PMIx_server_generate_locality_string(const pmix_cpuset_t *cpuset,
                                                    char **locality);
@@ -661,9 +661,9 @@ pmix_status_t PMIx_server_generate_cpuset_string(const pmix_cpuset_t *cpuset,
                                                  char **cpuset_string);
 
 pmix_status_t PMIx_server_define_process_set(const pmix_proc_t *members,
-                                             size_t nmembers, char *pset_name);
+                                             size_t nmembers, const char *pset_name);
 
-pmix_status_t PMIx_server_delete_process_set(char *pset_name);
+pmix_status_t PMIx_server_delete_process_set(const char *pset_name);
 
 pmix_status_t PMIx_server_register_resources(pmix_info_t info[], size_t ninfo,
                                              pmix_op_cbfunc_t cbfunc,
