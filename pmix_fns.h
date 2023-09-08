@@ -184,7 +184,7 @@ typedef pmix_status_t (*pmix_process_monitor_nb_fn_t)(const pmix_info_t *monitor
                                                       const pmix_info_t directives[], size_t ndirs,
                                                       pmix_info_cbfunc_t cbfunc, void *cbdata);
 
-/* No funtion pointer for PMIx_Heartbeat() */
+/* No function pointer for PMIx_Heartbeat() */
 
 typedef pmix_status_t (*pmix_get_credential_fn_t)(const pmix_info_t info[], size_t ninfo,
                                                   pmix_byte_object_t *credential);
